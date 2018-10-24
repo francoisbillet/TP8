@@ -7,11 +7,11 @@ package maservlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +25,8 @@ import simplejdbc.DataSourceFactory;
  *
  * @author pedago
  */
-public class NewServlet extends HttpServlet {
+@WebServlet(name = "NewServlet2", urlPatterns = {"/NewServlet2"})
+public class NewServlet2 extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,50 +42,33 @@ public class NewServlet extends HttpServlet {
         
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Servlet0</title>");            
+            out.println("<title>Servlet NewServlet2</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Servlet0 at " + request.getContextPath() + "</h1>");
-            
-            //Exemple avec nom:
-            //String nom = request.getParameter("nom");
-            //out.println("Nom = " + nom);
+            out.println("<h1>Servlet NewServlet2 at " + request.getContextPath() + "</h1>");
             
             DataSource myDataSource = DataSourceFactory.getDataSource(); 
             DAO myDAO = new DAO(myDataSource);
-                
-            //String state = "CA";
-            String state = request.getParameter("state");
-            List<CustomerEntity> result = myDAO.customersInState(state);  //on récupère les infos de customersInState pour state
             
-            //On crée les colonnes du tableau
-            out.println("<table border=1 width=30% height=40%>");
-            out.println("<tr>");
-                out.println("<th>ID</th>");
-                out.println("<th>Name</th>");
-                out.println("<th>Address</th>");
-            out.println("</tr>");
+            List<String> states = myDAO.getStates();
             
-            System.out.println("result = " + result);
-            
-            //On affiche les résultats
-            for (CustomerEntity c : result) {
-                out.println("<tr>");
-                out.println("<td>" + c.getCustomerId() + "</td>");
-                out.println("<td>" + c.getName() + "</td>");
-                out.println("<td>" + c.getAddressLine1() + "</td>");
-                out.println("</tr>");
+            out.println("<form method='get' action=''>");
+            out.println("<select name='state'>");
+            for (String s : states) {
+                out.println("<option value='"+s+"'>"+s+"</option>");
             }
-            
-           out.println("</table>");
+            out.println("</select>");
+            out.println("<input type='submit' value='Valider'>");
+            out.println("</form>");
             
             out.println("</body>");
             out.println("</html>");
-            
-        } catch (DAOException ex) {
+        }
+        catch (DAOException ex) {
             Logger.getLogger(NewServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
